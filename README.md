@@ -6,6 +6,10 @@ I'm going to be dusting of the old randori (https://github.com/avuko/randori), a
 
 ## Ansible setup
 
+### DigitalOcean specifics
+
+You can skip all of this if you don't use *DO*.
+
 First I'm going to be using doctl, because my targets are DigitalOcean droplets.
 
 https://github.com/digitalocean/doctl/releases I'm getting the latest tar.gz, unpacking and dropping in my bin
@@ -73,4 +77,28 @@ mv do-ansible-inventory ~/bin/
 rm README.md
 rm LICENSE.txt
 ```
+
+To create an ansible inventory file, I run `do-ansible-inventory --out=inventory`. 
+
+An inventory file is just a plain text file, that looks somewhat like this:
+
+```
+randori01	ansible_host=198.51.100.3
+
+[ams1]
+
+[ams2]
+
+[ams3]
+randori01
+
+[blr1]
+
+[....SNIP....]
+
+[randoriv2]
+randori01
+```
+
+
 
