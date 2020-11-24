@@ -1,5 +1,7 @@
 # Randori V2
 
+![](randori.gif)
+
 I'm going to be dusting of the old randori (https://github.com/avuko/randori), add a couple of techniques and make it all easy to deploy, manage, and destroy with ansible (https://www.ansible.com/).
 
 ## Ansible setup
