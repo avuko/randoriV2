@@ -133,7 +133,7 @@ randori01 : ok=1  changed=0  unreachable=0  failed=0  skipped=0  rescued=0  igno
 
 ## Intitial configuration
 
-Update, upgrade and reboot if required:
+Update, upgrade and reboot if required (I'm using Ubuntu systems, YMMV!):
 
 `ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/up*`
 
