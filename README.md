@@ -102,3 +102,44 @@ randori01
 
 
 
+To test if it works (add additional `-vvvv` to `ansible-playbook` to check why it doesn't):
+
+`ping.yml`
+
+```yaml
+---
+
+- hosts: randoriv2
+  remote_user: root 
+  gather_facts: false
+  tasks:
+    - ping:
+
+```
+
+
+
+```bash
+ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/ping.yml 
+
+PLAY [randoriv2] **************************************************************************************************************************************************************************************************
+
+TASK [ping] *******************************************************************************************************************************************************************************************************
+ok: [randori01]
+
+PLAY RECAP ********************************************************************************************************************************************************************************************************
+randori01 : ok=1  changed=0  unreachable=0  failed=0  skipped=0  rescued=0  ignored=0   
+```
+
+## Intitial configuration
+
+Update, upgrade and reboot if required:
+
+`ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/up*`
+
+[ansible/update.yml](ansible/update.yml)
+
+[ansible/upgrade_all.yml](ansible/upgrade_all.yml) (named `_all` so wildcard usage runs them in right order)
+
+[ansible/upgrade_reboot.yml](ansible/upgrade_reboot.yml)
+

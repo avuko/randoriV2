@@ -1,0 +1,7 @@
+---
+
+- hosts: randoriv2
+  remote_user: root
+  tasks:
+    - name: Upgrade all apt packages
+      apt: upgrade=dist force_apt_get=yes
