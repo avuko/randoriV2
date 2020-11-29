@@ -2,7 +2,7 @@
 
 ![](randori.gif)
 
-I'm going to be dusting of the old randori (https://github.com/avuko/randori), add a couple of techniques and make it all easy to deploy, manage, and destroy with ansible (https://www.ansible.com/).
+I'm going to be dusting off the old randori (https://github.com/avuko/randori), add a couple of techniques and make it all easy to deploy, manage, and destroy with Ansible (https://www.ansible.com/).
 
 ## Ansible setup
 
@@ -149,7 +149,7 @@ Update, upgrade and reboot if required (I'm using Ubuntu systems, YMMV!):
 
 `ssh -o 'PasswordAuthentication yes' -o 'PubkeyAuthentication no' root@randori01`
 
-The use of ansible-vault is less intuitive than I hoped.
+The use of `ansible-vault` is less intuitive than I hoped.
 
 These are the steps:
 
@@ -180,7 +180,7 @@ ansible/set_rootpassword.yml
     - user: name=root password="{{ root_password | string | password_hash('sha512') }}"
 ```
 
-## Tweaking limits.confg
+## Tweaking limits.conf
 
 The `limits.conf` needs to be set because, in order to both accept and connect back to a large number of brute-force attacks, we are going to spin up a lot of processes/files. So, we increase it with `set_limits.conf`.
 
