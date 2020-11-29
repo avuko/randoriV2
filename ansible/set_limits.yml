@@ -1,0 +1,16 @@
+---
+
+- hosts: randoriv2
+  remote_user: root
+  tasks:
+    - name: Ansible insert a line before example
+      run_once: true
+      blockinfile:
+        path: /etc/security/limits.conf
+        backup: yes
+        block: |
+          *         hard    nofile      500000
+          *         soft    nofile      500000
+          root      hard    nofile      500000
+          root      soft    nofile      500000
+        insertbefore: '# End of file'

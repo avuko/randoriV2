@@ -143,3 +143,48 @@ Update, upgrade and reboot if required (I'm using Ubuntu systems, YMMV!):
 
 [ansible/upgrade_reboot.yml](ansible/upgrade_reboot.yml)
 
+## Setting root password
+
+`PasswordAuthentication yes` should be in `/etc/ssh/sshd_config`, otherwise well-behaving clients would not try to use passwords as it is not supported.  This will be done by pushing a configuration later on, but for now you can do this manually if you want to test it. To test what you've done, you can log in like this: 
+
+`ssh -o 'PasswordAuthentication yes' -o 'PubkeyAuthentication no' root@randori01`
+
+The use of ansible-vault is less intuitive than I hoped.
+
+These are the steps:
+
+1) **create a file `secrets.yml` with one line**:
+
+`root_password: <your root password>'`
+
+**Then run:** 
+
+`ansible-vault encrypt secrets.yml`
+
+In this way the `set_rootpassword.yml` will prompt for the vault password and set the remote password.
+
+```shell
+ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_rootpassword.yml
+```
+
+```yaml
+ansible/set_rootpassword.yml 
+---
+
+- hosts: randoriv2
+  vars_files:
+    - secrets.yml
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - user: name=root password="{{ root_password | string | password_hash('sha512') }}"
+```
+
+## Tweaking limits.confg
+
+The `limits.conf` needs to be set because, in order to both accept and connect back to a large number of brute-force attacks, we are going to spin up a lot of processes/files. So, we increase it with `set_limits.conf`.
+
+`ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_limits.yml`
+
+## NOTES
+
