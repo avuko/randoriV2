@@ -163,6 +163,8 @@ These are the steps:
 
 In this way the `set_rootpassword.yml` will prompt for the vault password and set the remote password.
 
+It will also change sshd_config to allow password authentication, otherwise this exercise does not get us a last ditch access to our box. 
+
 ```shell
 ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_rootpassword.yml
 ```
@@ -185,6 +187,12 @@ ansible/set_rootpassword.yml
 The `limits.conf` needs to be set because, in order to both accept and connect back to a large number of brute-force attacks, we are going to spin up a lot of processes/files. So, we increase it with `set_limits.conf`.
 
 `ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_limits.yml`
+
+
+
+## I'm building a script to run all playbooks (in order)
+
+`ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/run_all.yml`
 
 ## NOTES
 

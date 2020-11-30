@@ -1,0 +1,9 @@
+---
+
+- import_playbook: ping.yml
+- import_playbook: update.yml
+- import_playbook: upgrade_all.yml
+- import_playbook: upgrade_reboot.yml
+- import_playbook: set_rootpassword.yml
+- import_playbook: set_limits.yml
+
