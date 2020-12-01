@@ -3,7 +3,7 @@
 - hosts: randoriv2
   remote_user: root
   tasks:
-    - name: Ansible insert a line before example
+    - name: increase hard and soft limits on number of open files
       run_once: true
       blockinfile:
         path: /etc/security/limits.conf
