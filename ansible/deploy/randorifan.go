@@ -17,7 +17,7 @@ import (
         "log/syslog"
 	"os"
 	"strings"
-	zmq "github.com/alecthomas/gozmq"
+	zmq "github.com/pebbe/zmq4"
 )
 
 func main() {

@@ -6,4 +6,6 @@
 - import_playbook: upgrade_reboot.yml
 - import_playbook: set_rootpassword.yml
 - import_playbook: set_limits.yml
-
+- import_playbook: build_essentials.yml
+- import_playbook: golang_install.yml
+- import_playbook: randori_install.yml

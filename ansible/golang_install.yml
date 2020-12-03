@@ -1,0 +1,34 @@
+---
+
+- hosts: randoriv2
+  remote_user: root
+  gather_facts: true
+  vars:
+    golang_version: "go1.15.5.linux-amd64.tar.gz"
+    deploy_path: "/tmp/deploy"
+    go_path: "gopath"
+    go_bin: "/usr/local/go/bin"
+  tasks:
+    - name: Check that the go binary already exists
+      stat:
+        path: "{{ go_bin }}"
+      register: go_bin_result
+    - name: Create a deploy directory for golang build
+      file:
+        path: "{{ deploy_path }}/{{ go_path }}"
+        state: directory
+        mode: '0755'
+      when: not go_bin_result.stat.exists
+
+    - name: dowload latest golang
+      get_url:
+        url: https://golang.org/dl/{{ golang_version }}
+        dest: "{{ deploy_path }}"
+      when: not go_bin_result.stat.exists
+
+    - name: unpack golang tar.gz to usr/local
+      unarchive:
+       src: "{{ deploy_path }}/{{ golang_version }}"
+       dest: /usr/local/
+       remote_src: yes
+      when: not go_bin_result.stat.exists

@@ -6,6 +6,12 @@ I'm going to be dusting off the old randori (https://github.com/avuko/randori), 
 
 ## Ansible setup
 
+## TL;DR 
+
+There is one playbook to run all the others. Caveat emptor: see  'Setting root password', as you need to create a specific `secrets.yml` file. You obviously also need an `inventory` file and a private key. Group all the hosts you want to set up under the `[randoriv2]` heading in your `inventory`. 
+
+`ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/run_all.yml`
+
 ### DigitalOcean specifics
 
 You can skip all of this if you don't use *DO*.
@@ -78,6 +84,8 @@ rm README.md
 rm LICENSE.txt
 ```
 
+## Create inventory
+
 To create an ansible inventory file, I run `do-ansible-inventory --out=inventory`. 
 
 An inventory file is just a plain text file, that looks somewhat like this:
@@ -131,7 +139,9 @@ PLAY RECAP *********************************************************************
 randori01 : ok=1  changed=0  unreachable=0  failed=0  skipped=0  rescued=0  ignored=0   
 ```
 
-## Intitial configuration
+
+
+## Initial configuration
 
 Update, upgrade and reboot if required (I'm using Ubuntu systems, YMMV!):
 
@@ -163,7 +173,7 @@ These are the steps:
 
 In this way the `set_rootpassword.yml` will prompt for the vault password and set the remote password.
 
-It will also change sshd_config to allow password authentication, otherwise this exercise does not get us a last ditch access to our box. 
+It will also change `sshd_config` to allow password authentication, otherwise this exercise does not get us a last ditch access to our box. 
 
 ```shell
 ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_rootpassword.yml
@@ -188,11 +198,68 @@ The `limits.conf` needs to be set because, in order to both accept and connect b
 
 `ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_limits.yml`
 
+## The golang environment
+
+`ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/build_essentials.yml`
+
+This is necessary because of dependency on packages to compile from source. This also installs things we'll need down the line to get our services running. 
+
+`ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/golang_install.yml`
+
+## Randori software installation
 
 
-## I'm building a script to run all playbooks (in order)
-
-`ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/run_all.yml`
 
 ## NOTES
 
+Possibly helpful dump of pages I visited, answering the question "A how many tabs problem was this?".
+
+These might or might not be valid/ in existence by the time you read this.
+
+https://docs.ansible.com/ansible/latest/user_guide/vault.html#storing-passwords-in-files
+
+https://www.mydailytutorials.com/ansible-add-line-to-file/
+
+https://stackoverflow.com/questions/24334115/ansible-lineinfile-for-several-lines
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/blockinfile_module.html
+
+https://www.digitalocean.com/community/tutorials/how-to-build-go-from-source-on-ubuntu-16-04
+
+https://stackoverflow.com/questions/56436906/how-to-cleanly-edit-sshd-config-for-basic-security-options-in-an-ansible-playboo
+
+https://stackoverflow.com/questions/62467670/ansible-module-to-stop-and-start-ssh-service
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+
+https://www.mydailytutorials.com/ansible-create-directory/
+
+https://golang.org/doc/install?download=go1.15.5.linux-arm64.tar.gz
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#defining-simple-variables
+
+https://abdennoor.medium.com/setup-go-with-ansible-for-golang-programming-22d451585e07
+
+https://github.com/abdennour/ansible-role-golang
+
+https://stackoverflow.com/questions/35988567/ansible-doesnt-load-profile
+
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_environment.html#playbooks-environment
+
+https://stackoverflow.com/questions/45815938/unable-to-download-golang-repository-by-using-ansible
+
+https://medium.com/learn-go/go-path-explained-cab31a0d90b9
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html#examples
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+
+https://stackoverflow.com/questions/35654286/how-to-check-if-a-file-exists-in-ansible
+
+https://stackoverflow.com/questions/54944080/installing-multiple-packages-in-ansible
+
+https://stackoverflow.com/questions/29289472/ansible-how-ansible-env-path-is-set-in-ssh-session
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/replace_module.html
