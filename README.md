@@ -228,7 +228,7 @@ The files are copied over, and when there is a change detected, it's recompiled.
 
 ## NOTES
 
-Possibly helpful dump of pages I visited, answering the question "A how many tabs problem was this?".
+Possibly helpful (at least for me) dump of pages I visited, answering the question "A how many tabs problem was this?" and preventing me from hunting through my browser history.
 
 These might or might not be valid/ in existence by the time you read this.
 
