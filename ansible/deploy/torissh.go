@@ -5,7 +5,8 @@ import (
 	"golang.org/x/crypto/ssh"
 	// "log"
 	"strings"
-	zmq "github.com/alecthomas/gozmq"
+    // XXX used to be zmq "github.com/alecthomas/gozmq"
+    zmq "github.com/pebbe/zmq4"
 )
 
 func authcheck(ip, username, password string) (response []byte) {
@@ -30,7 +31,7 @@ func authcheck(ip, username, password string) (response []byte) {
 func main() {
 
     context, _ := zmq.NewContext()
-    defer context.Close()
+    defer context.Term()
 
     //  Socket to receive messages on
     receiver, _ := context.NewSocket(zmq.PULL)
@@ -48,7 +49,8 @@ func main() {
 	ip, username, password := rline[1], rline[2], rline[3]
 	result := authcheck(ip[:], username[:], password[:])
 	authcheckresult := fmt.Sprintf("TORISSH: ip=%s username=%s password=%s result=%s", ip, username, password, result[:])
-	sender.Send([]byte(authcheckresult), 0)
+	// XXX changed to SendBytes
+	sender.SendBytes([]byte(authcheckresult), 0)
 	}
 
 }

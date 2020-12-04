@@ -9,11 +9,6 @@
     go_path: "gopath"
     go_bin: "/usr/local/go/bin"
     go_ssh_common_go: "src/golang.org/x/crypto/ssh/common.go"
-    copy_files:
-      - deploy/randorifan.go
-      - deploy/randorisink.go
-      - deploy/torissh.go
-      - deploy/toritelnet.go
   tasks:
     - name: check for zmq install
       stat:
@@ -25,7 +20,7 @@
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
-      when: not zmq4.stat.isdir
+      when: not zmq4.stat.exists
 
     - name: check for go ssh install
       stat:
@@ -37,7 +32,7 @@
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
-      when: not ssh.stat.isdir
+      when: not ssh.stat.exists
 
         #  "$PATH" is a literal string in 'environment:', so use ansible_env.PATH
         # - name: test path
@@ -45,13 +40,6 @@
         #   environment:
         #     PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         #     GOPATH: "{{ deploy_path }}/{{ go_path }}"
-
-
-    - name: install go ssh module
-      shell: go get golang.org/x/crypto/ssh
-      environment:
-        PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
-        GOPATH: "{{ deploy_path }}/{{ go_path }}"
 
     - name: degrade the go ssh module so it can handle bad ciphers
       replace:
@@ -61,18 +49,54 @@
         replace: ' "arcfour128", "aes128-cbc", "arcfour"'
         backup: yes
 
-    - name: copy over the randori and tori go files
+    - name: touch /var/log/randorilog
       copy:
-        src: "{{ item }}"
-        dest: "{{ deploy_path }}/{{ go_path }}"
-      with_items: "{{ copy_files }}"
+        content: ""
+        dest: /var/log/randorilog
+        force: no
+        group: adm
+        owner: syslog
+        mode: 0640
 
-    # XXX code is old, and replaced with pebbe/zmq4
-    # Needs to be redesigned
-    # TODO
+    # XXX The randori code is old, and I replaced gozmq with pebbe/zmq4
+    # It currently compiles, but needs to be debugged
+    # TODO run these as services.
+
+    - name: copy randorifan source
+      copy:
+        src: deploy/randorifan.go
+        dest: "{{ deploy_path }}/{{ go_path }}"
+      register: randorifan
+
     - name: build randorifan.go
       shell: "go build {{ deploy_path }}/{{ go_path }}/randorifan.go"
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
+      when: randorifan.changed
 
+    - name: copy randorisink source
+      copy:
+        src: deploy/randorisink.go
+        dest: "{{ deploy_path }}/{{ go_path }}"
+      register: randorisink
+
+    - name: build randorisink.go
+      shell: "go build {{ deploy_path }}/{{ go_path }}/randorisink.go"
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
+        GOPATH: "{{ deploy_path }}/{{ go_path }}"
+      when: randorisink.changed
+
+    - name: copy torissh source
+      copy:
+        src: deploy/torissh.go
+        dest: "{{ deploy_path }}/{{ go_path }}"
+      register: torissh
+
+    - name: build torissh.go
+      shell: "go build {{ deploy_path }}/{{ go_path }}/torissh.go"
+      environment:
+        PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
+        GOPATH: "{{ deploy_path }}/{{ go_path }}"
+      when: torissh.changed

@@ -12,7 +12,8 @@ import (
         "log/syslog"
 	// "os"
 	// "time"
-	zmq "github.com/alecthomas/gozmq"
+	// XXX used to be a diferent library 
+	zmq "github.com/pebbe/zmq4"
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 
 	// defer closing of context
 	context, _ := zmq.NewContext()
-	defer context.Close()
+	defer context.Term()
 
 	//  Socket to receive messages on
 	receiver, _ := context.NewSocket(zmq.PULL)

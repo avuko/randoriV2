@@ -6,6 +6,9 @@
 *  5023 = telnet
 *  5080 = apache
 *  6666 = overall sink
+* XXX I'm using a new library, trying it as a drop-in replacement.
+* XXX alecthomas/gozmq > pebbe/zmq4
+* XXX This might be a bumpy ride...
 */
 
 package main
@@ -29,7 +32,8 @@ func main() {
     fifofile := os.Stdin
     stdininfo, _ := fifofile.Stat()
     context, _ := zmq.NewContext()
-    defer context.Close()
+    // XXX this used to say .Close() in a previous library
+    defer context.Term()
 
     // Socket to send telnet messages through [login]
     telnetsender, _ := context.NewSocket(zmq.PUSH)
@@ -77,10 +81,12 @@ func main() {
 			switch {
 			case authsource == "login":
 				// log.Printf("DEBUG: protocol: %s", authsource) // DEBUG
-			telnetsender.Send([]byte(msg), 0)
+				// XXX this used to be Send, now it's SendBytes?
+		    telnetsender.SendBytes([]byte(msg), 0)
 			case authsource == "sshd":
 				// log.Printf("DEBUG: protocol: %s", authsource) // DEBUG
-			sshsender.Send([]byte(msg), 0)
+				// XXX this used to be Send, now it's SendBytes?
+			sshsender.SendBytes([]byte(msg), 0)
 			default:
 				// log.Printf("DEBUG: protocol: %s", authsource)  // DEBUG
 			}
