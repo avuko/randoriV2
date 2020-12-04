@@ -279,3 +279,13 @@ https://stackoverflow.com/questions/54944080/installing-multiple-packages-in-ans
 https://stackoverflow.com/questions/29289472/ansible-how-ansible-env-path-is-set-in-ssh-session
 
 https://docs.ansible.com/ansible/latest/collections/ansible/builtin/replace_module.html
+
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html#return-values
+
+http://api.zeromq.org/4-1:zmq-ctx-term
+
+https://godoc.org/github.com/pebbe/zmq4#Socket.SendBytes
+
+https://stackoverflow.com/questions/28347717/how-to-create-an-empty-file-with-ansible
+
+https://www.guru99.com/file-permissions.html
