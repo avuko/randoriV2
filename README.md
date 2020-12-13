@@ -4,7 +4,7 @@
 
 I'm going to be dusting off the old randori (https://github.com/avuko/randori), add a couple of techniques and make it all easy to deploy, manage, and destroy with Ansible (https://www.ansible.com/).
 
-## Ansible setup
+# CURRENTLY DEVELOPING. DO NOT RUN THIS
 
 ## TL;DR 
 
