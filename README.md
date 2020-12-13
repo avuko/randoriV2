@@ -9,10 +9,10 @@ I'm going to be dusting off the old randori (https://github.com/avuko/randori), 
 ## TL;DR 
 
 ```shell
-ansible-playbook --ask-vault-pass --private-key ~/.ssh/do -i ansible/inventory ansible/run_all.yml`
+ansible-playbook --ask-vault-pass --private-key ~/.ssh/do -i ansible/inventory.yml ansible/run_all.yml`
 ```
 
-There is one playbook to run all the others. Caveat emptor: see  'Setting root password', as you need to create a specific `secrets.yml` file. You obviously also need an `inventory` file and a private key. Group all the hosts you want to set up under the `[randoriv2]` heading in your `inventory`. 
+There is one playbook to run all the others. Caveat emptor: see  '**Setting root password**', as you need to create a specific `secrets.yml` file. You obviously also need an `inventory.yml` file and a private key. Group all the hosts you want to set up under the `[randoriv2]` heading in your `inventory`. 
 
 ### DigitalOcean specifics
 
