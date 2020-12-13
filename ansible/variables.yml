@@ -1,0 +1,49 @@
+---
+# general config
+ansible_user: root
+deploy_path: "/tmp/deploy"
+
+# update.yml
+distro: "focal"
+
+# build_essentials.yml
+build_install_pkgs:
+# apparently, libzmq3-dev provides libzmq5-dev
+# which really is 4.3.2:
+# pkg-config --modversion libzmq
+#   4.3.2
+  - build-essential
+  - libpam0g-dev
+  - telnetd
+  - dpatch
+  - fakeroot
+  - devscripts
+  - equivs
+  - lintian
+  - quilt
+  - dpkg-dev
+  - dh-autoreconf
+  - dh-systemd
+  - libzmq3-dev
+  - pkg-config
+
+# golang_install.yml + randori.yml
+go_bin: /usr/local/go/bin
+go_dest: /usr/local/
+go_path: gopath
+go_url: https://golang.org/dl/
+golang_version: go1.15.5.linux-amd64.tar.gz
+
+# randori_install.yml
+local_deploy_path: "deploy"
+go_ssh_common_go: "src/golang.org/x/crypto/ssh/common.go"
+go_zmq4_url: "github.com/pebbe/zmq4"
+go_ssh_url: "golang.org/x/crypto/ssh"
+randori_log: "/var/log/randorilog"
+randorifan_go: "randorifan.go"
+randorisink_go: "randorisink.go"
+torissh_go: "torissh.go"
+
+# openssh.yml
+openssh_version: "1:8.2p1-4ubuntu0.1"
+openssh_dir: "openssh-8.2p1"

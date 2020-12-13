@@ -9,7 +9,7 @@ I'm going to be dusting off the old randori (https://github.com/avuko/randori), 
 ## TL;DR 
 
 ```shell
-ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/run_all.yml`
+ansible-playbook --ask-vault-pass --private-key ~/.ssh/do -i ansible/inventory ansible/run_all.yml`
 ```
 
 There is one playbook to run all the others. Caveat emptor: see  'Setting root password', as you need to create a specific `secrets.yml` file. You obviously also need an `inventory` file and a private key. Group all the hosts you want to set up under the `[randoriv2]` heading in your `inventory`. 
@@ -114,6 +114,40 @@ randori01
 randori01
 ```
 
+This is an `INI` style file, but as we are doing everything with yml, I'm going to convert it so it looks like this:
+
+```bash
+ansible-inventory -i inventory -y --list > inventory.yml
+```
+
+```yaml
+all:
+  children:
+    ams1: {}
+    ams2: {}
+    ams3:
+      hosts:
+        randori01:
+          ansible_host: 198.51.100.3
+    blr1: {}
+    fra1: {}
+    lon1: {}
+    nyc1: {}
+    nyc2: {}
+    nyc3: {}
+    randoriv2:
+      hosts:
+        randori01: {}
+    sfo1: {}
+    sfo2: {}
+    sfo3: {}
+    sgp1: {}
+    tor1: {}
+    ungrouped: {}
+
+```
+
+
 
 To test if it works (add additional `-vvvv` to `ansible-playbook` to check why it doesn't):
 
@@ -123,8 +157,8 @@ To test if it works (add additional `-vvvv` to `ansible-playbook` to check why i
 ---
 
 - hosts: randoriv2
-  remote_user: root 
-  gather_facts: false
+  vars_files:
+  - variables.yml
   tasks:
     - ping:
 
@@ -133,7 +167,7 @@ To test if it works (add additional `-vvvv` to `ansible-playbook` to check why i
 
 
 ```bash
-ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/ping.yml 
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/ping.yml 
 
 PLAY [randoriv2] ************************************************************************
 
@@ -147,7 +181,7 @@ randori01 : ok=1  changed=0  unreachable=0  failed=0  skipped=0  rescued=0  igno
 ## Initial configuration
 
 ```shell
-ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/up*`
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory ansible/up*`
 ```
 
 Update, upgrade and reboot if required (I'm using Ubuntu systems, YMMV!)
@@ -161,7 +195,7 @@ Update, upgrade and reboot if required (I'm using Ubuntu systems, YMMV!)
 ## Setting root password
 
 ```shell
-ansible-playbook --ask-vault-pass --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_rootpassword.yml
+ansible-playbook --ask-vault-pass --private-key ~/.ssh/do -i ansible/inventory.yml ansible/set_rootpassword.yml
 ```
 
 `PasswordAuthentication yes` should be in `/etc/ssh/sshd_config`, otherwise well-behaving clients would not try to use passwords as it is not supported.  This will be done by pushing a configuration later on, but for now you can do this manually if you want to test it. To test what you've done, you can log in like this: 
@@ -191,6 +225,7 @@ ansible/set_rootpassword.yml
 - hosts: randoriv2
   vars_files:
     - secrets.yml
+    - variables.yml
   remote_user: root
   gather_facts: false
   tasks:
@@ -200,7 +235,7 @@ ansible/set_rootpassword.yml
 ## Tweaking limits.conf
 
 ```shell
-ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/set_limits.yml`
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/set_limits.yml`
 ```
 
 The `limits.conf` needs to be set because, in order to both accept and connect back to a large number of brute-force attacks, we are going to spin up a lot of processes/files. So, we increase it with `set_limits.conf`.
@@ -208,18 +243,18 @@ The `limits.conf` needs to be set because, in order to both accept and connect b
 ## The golang environment
 
 ```shell
-ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/build_essentials.yml`
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/build_essentials.yml`
 ```
 
 ```bash
-ansible-playbook --private-key ~/.ssh/digitalocean -i ansible/inventory ansible/golang_install.yml
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/golang_install.yml
 ```
 
 Setting up the build environment is necessary because of dependency on packages to compile from source. This also installs things we'll need down the line to get our services running, patch OpenSSH and compile the golang source.. 
 
 ## Randori software installation
 
-`ansible-playbook -vv --private-key ~/.ssh/digitalocean -i inventory randori_install.yml`
+`ansible-playbook -vv --private-key ~/.ssh/do -i inventory.yml randori_install.yml`
 
 The golang source is old, so the libraries are being replaced, and it all has still to be debugged.
 The files are copied over, and when there is a change detected, it's recompiled. Additionally it creates a `/var/log/randorilog` file, which I currently can't remember what its there for.
@@ -289,3 +324,5 @@ https://godoc.org/github.com/pebbe/zmq4#Socket.SendBytes
 https://stackoverflow.com/questions/28347717/how-to-create-an-empty-file-with-ansible
 
 https://www.guru99.com/file-permissions.html
+
+https://linuxhint.com/vim_split_screen/

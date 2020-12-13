@@ -1,7 +1,7 @@
 ---
 
 - hosts: randoriv2
-  remote_user: root 
-  gather_facts: false
+  vars_files:
+    - variables.yml
   tasks:
     - ping:

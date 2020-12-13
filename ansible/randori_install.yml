@@ -1,22 +1,16 @@
 ---
 
 - hosts: randoriv2
-  remote_user: root
-  gather_facts: true
-  vars:
-    golang_version: "go1.15.5.linux-amd64.tar.gz"
-    deploy_path: "/tmp/deploy"
-    go_path: "gopath"
-    go_bin: "/usr/local/go/bin"
-    go_ssh_common_go: "src/golang.org/x/crypto/ssh/common.go"
+  vars_files:
+    - variables.yml
   tasks:
     - name: check for zmq install
       stat:
-        path: "{{ deploy_path }}/{{ go_path }}/src/github.com/pebbe/zmq4"
+        path: "{{ deploy_path }}/{{ go_path }}/src/{{ go_zmq4_url }}"
       register: zmq4
 
     - name: install go zmq4 module
-      shell: go get github.com/pebbe/zmq4
+      shell: go get {{ go_zmq4_url }}
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
@@ -24,11 +18,11 @@
 
     - name: check for go ssh install
       stat:
-        path: "{{ deploy_path }}/{{ go_path }}/src/golang.org/x/crypto/ssh"
+        path: "{{ deploy_path }}/{{ go_path }}/src/{{ go_ssh_url }}"
       register: ssh
 
     - name: install go ssh module
-      shell: go get golang.org/x/crypto/ssh
+      shell: go get {{ go_ssh_url }}
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
@@ -43,16 +37,16 @@
 
     - name: degrade the go ssh module so it can handle bad ciphers
       replace:
-        # hardcoded regex
+        # hardcoded regex/replace
         path: "{{ deploy_path }}/{{ go_path }}/{{ go_ssh_common_go }}"
         regexp: ' "arcfour128", "arcfour"'
         replace: ' "arcfour128", "aes128-cbc", "arcfour"'
         backup: yes
 
-    - name: touch /var/log/randorilog
+    - name: touch {{ randori_log }}
       copy:
         content: ""
-        dest: /var/log/randorilog
+        dest: "{{ randori_log }}"
         force: no
         group: adm
         owner: syslog
@@ -64,12 +58,12 @@
 
     - name: copy randorifan source
       copy:
-        src: deploy/randorifan.go
+        src: "{{ local_deploy_path }}/{{ randorifan_go }}"
         dest: "{{ deploy_path }}/{{ go_path }}"
       register: randorifan
 
-    - name: build randorifan.go
-      shell: "go build {{ deploy_path }}/{{ go_path }}/randorifan.go"
+    - name: build {{ randorifan_go }}
+      shell: "go build {{ deploy_path }}/{{ go_path }}/{{ randorifan_go }}"
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
@@ -77,12 +71,12 @@
 
     - name: copy randorisink source
       copy:
-        src: deploy/randorisink.go
+        src: "{{ local_deploy_path }}/{{ randorisink_go }}"
         dest: "{{ deploy_path }}/{{ go_path }}"
       register: randorisink
 
-    - name: build randorisink.go
-      shell: "go build {{ deploy_path }}/{{ go_path }}/randorisink.go"
+    - name: build {{ randorisink_go }}
+      shell: "go build {{ deploy_path }}/{{ go_path }}/{{ randorisink_go }}"
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"
@@ -90,12 +84,12 @@
 
     - name: copy torissh source
       copy:
-        src: deploy/torissh.go
+        src: "{{ local_deploy_path }}/{{ torissh_go }}"
         dest: "{{ deploy_path }}/{{ go_path }}"
       register: torissh
 
-    - name: build torissh.go
-      shell: "go build {{ deploy_path }}/{{ go_path }}/torissh.go"
+    - name: build {{ torissh_go }}
+      shell: "go build {{ deploy_path }}/{{ go_path }}/{{ torissh_go }}"
       environment:
         PATH: "{{ ansible_env.PATH }}:{{ go_bin }}"
         GOPATH: "{{ deploy_path }}/{{ go_path }}"

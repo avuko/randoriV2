@@ -1,7 +1,8 @@
 ---
 
 - hosts: randoriv2
-  remote_user: root
+  vars_files:
+    - variables.yml
   tasks:
     - name: increase hard and soft limits on number of open files
       run_once: true

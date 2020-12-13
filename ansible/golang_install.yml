@@ -1,13 +1,8 @@
 ---
-
+# variables come from inventory.yml
 - hosts: randoriv2
-  remote_user: root
-  gather_facts: true
-  vars:
-    golang_version: "go1.15.5.linux-amd64.tar.gz"
-    deploy_path: "/tmp/deploy"
-    go_path: "gopath"
-    go_bin: "/usr/local/go/bin"
+  vars_files:
+    - variables.yml
   tasks:
     - name: Check that the go binary already exists
       stat:
@@ -22,13 +17,13 @@
 
     - name: dowload latest golang
       get_url:
-        url: https://golang.org/dl/{{ golang_version }}
+        url: "{{ go_url }}{{ golang_version }}"
         dest: "{{ deploy_path }}"
       when: not go_bin_result.stat.exists
 
-    - name: unpack golang tar.gz to usr/local
+    - name: unpack golang tar.gz to {{ go_dest }}
       unarchive:
        src: "{{ deploy_path }}/{{ golang_version }}"
-       dest: /usr/local/
+       dest: "{{ go_dest }}"
        remote_src: yes
       when: not go_bin_result.stat.exists

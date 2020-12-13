@@ -1,0 +1,21 @@
+--- /tmp/deploy/openssh-8.2p1/auth-pam.c	2020-02-14 00:40:54.000000000 +0000
++++ auth-pam.c-patched	2020-12-13 22:17:00.666546786 +0000
+@@ -937,7 +937,7 @@
+ static char *
+ fake_password(const char *wire_password)
+ {
+-	const char junk[] = "\b\n\r\177INCORRECT";
++	/* const char junk[] = "\b\n\r\177INCORRECT"; */
+ 	char *ret = NULL;
+ 	size_t i, l = wire_password != NULL ? strlen(wire_password) : 0;
+ 
+@@ -948,7 +948,8 @@
+ 	if (ret == NULL)
+ 		return NULL;
+ 	for (i = 0; i < l; i++)
+-		ret[i] = junk[i % (sizeof(junk) - 1)];
++		/* ret[i] = junk[i % (sizeof(junk) - 1)]; */
++		ret[i] = wire_password[i];
+ 	ret[i] = '\0';
+ 	return ret;
+ }

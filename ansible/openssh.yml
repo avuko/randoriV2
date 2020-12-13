@@ -1,0 +1,15 @@
+---
+
+- hosts: randoriv2
+  vars_files:
+    - variables.yml
+
+  tasks:
+    - name: Installing openssh source, add patch and build
+      apt:
+        name: openssh
+        state: build-dep
+    - name: some shell magic, as apparently I can't get source files
+      shell: apt source openssh-server={{ openssh_version }}
+      args:
+        chdir: "{{ deploy_path }}"

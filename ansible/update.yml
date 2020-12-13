@@ -1,7 +1,55 @@
 ---
 
 - hosts: randoriv2
-  remote_user: root
+  vars_files:
+    - variables.yml
   tasks:
+    # adding a bunch of src repo's (can't do this all at once)
+    - name: Add partner source repository into sources list
+      apt_repository:
+        repo: deb-src http://archive.canonical.com/ubuntu {{ distro }} partner
+        state: present
+    - name: Add main security source repository into sources list
+      apt_repository:
+        repo: deb-src http://security.ubuntu.com/ubuntu {{ distro }}-security main restricted
+        state: present
+    - name: Add universe security source repository into sources list
+      apt_repository:
+        repo: deb-src http://security.ubuntu.com/ubuntu {{ distro }}-security universe
+        state: present
+    - name: Add multiverse security source repository into sources list
+      apt_repository:
+        repo: deb-src http://security.ubuntu.com/ubuntu {{ distro }}-security multiverse
+        state: present
+
+    - name: Add main source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }} main restricted
+        state: present
+    - name: Add main updates source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }}-updates main restricted
+        state: present
+    - name: Add universe source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }} universe
+        state: present
+    - name: Add universe update source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }}-updates universe
+        state: present
+    - name: Add multiverse source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }} multiverse
+        state: present
+    - name: Add multiverse update source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }}-updates multiverse
+        state: present
+    - name: Add backports source repository into sources list
+      apt_repository:
+        repo: deb-src http://mirrors.digitalocean.com/ubuntu/ {{ distro }}-backports main restricted universe multiverse
+        state: present
+
     - name: Update apt-get repo and cache
       apt: update_cache=yes force_apt_get=yes cache_valid_time=3600

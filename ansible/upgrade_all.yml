@@ -1,7 +1,8 @@
 ---
 
 - hosts: randoriv2
-  remote_user: root
+  vars_files:
+    - variables.yml
   tasks:
     - name: Upgrade all apt packages
       apt: upgrade=dist force_apt_get=yes
