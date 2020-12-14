@@ -275,6 +275,10 @@ ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/openss
 
 There is only a small patch needed to actually capture the passwords (instead of `junk[] = "\b\n\r\177INCORRECT";`) on repeat. But as you can see in openssh.yml, it took quite a number of specific variables to get the source package, patch, rebuild, install and restart the service.
 
+## pam
+
+> to be continued, I'll need common-auth and logins/logins.def
+
 ## NOTES
 
 Possibly helpful (at least for me) dump of pages I visited, answering the question "A how many tabs problem was this?" and preventing me from hunting through my browser history.
