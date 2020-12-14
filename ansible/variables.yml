@@ -2,6 +2,7 @@
 # general config
 ansible_user: root
 deploy_path: "/tmp/deploy"
+local_deploy_path: "deploy"
 
 # update.yml
 distro: "focal"
@@ -35,7 +36,6 @@ go_url: https://golang.org/dl/
 golang_version: go1.15.5.linux-amd64.tar.gz
 
 # randori_install.yml
-local_deploy_path: "deploy"
 go_ssh_common_go: "src/golang.org/x/crypto/ssh/common.go"
 go_zmq4_url: "github.com/pebbe/zmq4"
 go_ssh_url: "golang.org/x/crypto/ssh"
@@ -47,3 +47,6 @@ torissh_go: "torissh.go"
 # openssh.yml
 openssh_version: "1:8.2p1-4ubuntu0.1"
 openssh_dir: "openssh-8.2p1"
+openssh_patch: "openssh-server8.2p1-auth-pam.c-patch"
+openssh_auth_pam: "auth-pam.c"
+openssh_deb: "openssh-server_8.2p1-4ubuntu0.1_amd64.deb"

@@ -12,7 +12,13 @@ I'm going to be dusting off the old randori (https://github.com/avuko/randori), 
 ansible-playbook --ask-vault-pass --private-key ~/.ssh/do -i ansible/inventory.yml ansible/run_all.yml`
 ```
 
-There is one playbook to run all the others. Caveat emptor: see  '**Setting root password**', as you need to create a specific `secrets.yml` file. You obviously also need an `inventory.yml` file and a private key. Group all the hosts you want to set up under the `[randoriv2]` heading in your `inventory`. 
+There is one playbook to run all the others. Caveat emptor: see  '**Setting root password**', as you need to create a specific `secrets.yml` file. You obviously also need an `inventory.yml` file and a private key. Group all the hosts you want to set up under the `[randoriv2]` heading in your `inventory`.
+
+Get ansible.posix:
+
+```shell
+ansible-galaxy collection install ansible.posix
+```
 
 ### DigitalOcean specifics
 
@@ -254,12 +260,20 @@ Setting up the build environment is necessary because of dependency on packages 
 
 ## Randori software installation
 
-`ansible-playbook -vv --private-key ~/.ssh/do -i inventory.yml randori_install.yml`
+```bash
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/randori_install.yml`
+```
 
 The golang source is old, so the libraries are being replaced, and it all has still to be debugged.
 The files are copied over, and when there is a change detected, it's recompiled. Additionally it creates a `/var/log/randorilog` file, which I currently can't remember what its there for.
 
->  To be continued
+## Compiling the tweaked openssh-server
+
+```bash
+ansible-playbook --private-key ~/.ssh/do -i ansible/inventory.yml ansible/openssh.yml
+```
+
+There is only a small patch needed to actually capture the passwords (instead of `junk[] = "\b\n\r\177INCORRECT";`) on repeat. But as you can see in openssh.yml, it took quite a number of specific variables to get the source package, patch, rebuild, install and restart the service.
 
 ## NOTES
 

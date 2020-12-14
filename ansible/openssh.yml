@@ -13,3 +13,29 @@
       shell: apt source openssh-server={{ openssh_version }}
       args:
         chdir: "{{ deploy_path }}"
+
+    - name: patch the auth_pam.c file so we can see the password
+      ansible.posix.patch:
+        src: "{{ local_deploy_path }}/{{ openssh_patch }}"
+        dest: "{{ deploy_path }}/{{ openssh_dir }}/{{ openssh_auth_pam }}"
+        backup: yes
+
+    - name: building takes a long time. Check if openssh-server deb exists
+      stat:
+        path: "{{ deploy_path }}/{{ openssh_deb }}"
+      register: openssh_server_deb
+
+    - name: some shell magic cleaning and creating binary
+      shell: fakeroot debian/rules clean && fakeroot debian/rules binary
+      args:
+        chdir: "{{ deploy_path }}/{{ openssh_dir }}"
+      when: not openssh_server_deb.stat.exists
+
+    - name: install the openssh-server package
+      apt:
+        dpkg_options: install,force-all
+        deb: "{{ deploy_path }}/{{ openssh_deb }}"
+    - name: restart the openssh service
+      service:
+        name: sshd
+        state: restarted
