@@ -50,3 +50,16 @@ openssh_dir: "openssh-8.2p1"
 openssh_patch: "openssh-server8.2p1-auth-pam.c-patch"
 openssh_auth_pam: "auth-pam.c"
 openssh_deb: "openssh-server_8.2p1-4ubuntu0.1_amd64.deb"
+sshd_config: "/etc/ssh/sshd_config"
+# pam.yml
+pam_makescript: "make.sh"
+pam_randori_c: "pam_randori.c"
+pam_randori_so: "pam_randori.so"
+pam_common_auth: "/etc/pam.d/common-auth"
+
+# rsyslog.yml
+rsyslog_conf: "/etc/rsyslog.conf"
+rotate_rsyslog: "/etc/logrotate.d/rsyslog"
+logrotate: "/etc/logrotate.conf"
+rotate_auth_log: "/var/log/auth.log"
+results_script: "results.sh"

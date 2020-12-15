@@ -1,0 +1,25 @@
+---
+
+- hosts: randoriv2
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: copy {{ pam_randori_c }} to {{ deploy_path }}
+      copy:
+        src: "{{ local_deploy_path }}/{{ pam_randori_c }}"
+        dest: "{{ deploy_path }}"
+    - name: build and install the randori pam module
+      script:
+        cmd: "{{ local_deploy_path }}/{{ pam_makescript }}"
+        chdir: "{{ deploy_path }}/"
+    - name: change {{ pam_common_auth }} to use {{ pam_randori_so }}
+      lineinfile:
+        path: "{{ pam_common_auth }}"
+        line: "auth\trequired\t\t\tpam_randori.so"
+        insertafter: ".*success=.*"
+    - name: change success=1 to success=2 to also skip {{ pam_randori_so }}
+      replace:
+        path: "{{ pam_common_auth }}"
+        regexp: "success=1"
+        replace: "success=2"
+

@@ -15,3 +15,6 @@
           root      hard    nofile      500000
           root      soft    nofile      500000
         insertbefore: '# End of file'
+    - name: disable ufw logging
+      shell:
+        cmd: ufw logging off

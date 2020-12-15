@@ -1,0 +1,47 @@
+---
+
+- hosts: randoriv2
+  vars_files:
+    - variables.yml
+  tasks:
+    - name: configure {{ rsyslog_conf }} timestamps
+      replace:
+        path: "{{ rsyslog_conf }}"
+        regexp: ^\$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+        replace: "# $ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat"
+
+    - name: disable MsgReduction in {{ rsyslog_conf }}
+      replace:
+        path: "{{ rsyslog_conf }}"
+        regexp: ^\$RepeatedMsgReduction on
+        replace: "# $RepeatedMsgReduction on"
+
+    - name: create a rotation for auth.log
+      blockinfile:
+        path: "{{ rotate_rsyslog }}"
+        insertafter: "{{ rotate_auth_log }}"
+        block: |
+          {
+              rotate 2
+              daily
+              missingok
+              notifempty
+              delaycompress
+              compress
+              prerotate
+                  {{ deploy_path }}/{{ results_script }}
+              endscript
+              postrotate
+                  invoke-rc.d rsyslog rotate > /dev/null
+              endscript
+          }
+
+    - name: deploy {{ results_script }}
+      copy:
+        src: "{{ local_deploy_path }}/{{ results_script }}"
+        dest: "{{ deploy_path }}/{{ results_script }}"
+        mode: 0555
+    - name: restart rsyslog service
+      service:
+        name: rsyslog
+        state: restarted
